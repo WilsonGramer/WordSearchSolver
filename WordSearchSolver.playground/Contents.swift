@@ -48,20 +48,21 @@ extension Array where Element == Position {
 /// and a final position.
 struct PositionRange: Equatable, CustomStringConvertible {
     
-    var initialPosition: Position
-    var finalPosition: Position
+    var positions: [Position]
     
-    init(from initialPosition: Position, to finalPosition: Position) {
-        self.initialPosition = initialPosition
-        self.finalPosition = finalPosition
+    var initialPosition: Position {
+        return self.positions.first!
+    }
+    
+    var finalPosition: Position {
+        return self.positions.last!
     }
     
     init?(fromPositions positions: [Position]) {
         if positions.count <= 2 {
             return nil
         } else {
-            let ordered = positions.ordered()
-            self.init(from: ordered.first!, to: ordered.last!)
+            self.positions = positions.ordered()
         }
     }
     
@@ -258,6 +259,33 @@ func convertToWordSearch(string: String) -> WordSearch? {
     return result
 }
 
+enum BeautifyMode {
+    case changeCase
+    case starInPlace
+    case starAround
+    case onlyShowSolved
+}
+
+func beautify(_ wordSearch: WordSearch, solutions: [String : PositionRange], mode: BeautifyMode) -> String {
+    return wordSearch.enumerated().map { rowIndex, row in
+        return row.enumerated().map { characterIndex, character in
+            let p: Position = (x: rowIndex, y: characterIndex)
+            let containsSolvedCharacter = solutions.values.contains { $0.positions.contains { $0 == p } }
+            
+            switch mode {
+            case .changeCase:
+                return containsSolvedCharacter ? String(character).uppercased() : String(character).lowercased()
+            case .starInPlace:
+                return containsSolvedCharacter ? "*" : String(character)
+            case .starAround:
+                return containsSolvedCharacter ? "*\(character)*" : " \(character) "
+            case .onlyShowSolved:
+                return containsSolvedCharacter ? String(character) : ""
+            }
+        }
+    }.map({ $0.joined(separator: " ") }).joined(separator: mode == .starAround ? "\n\n" : "\n")
+}
+
 let input = """
 J F U A C T P Z S J I E D T J
 A J K O Y F E C G D F L T R J
@@ -296,6 +324,10 @@ let percentFound = Int(Double(searched.count) / Double(wordsToFind.count) * 100)
 let s = "FOUND \(searched.count) OUT OF \(wordsToFind.count) WORDS (\(percentFound)%):"
 print(s)
 print(String(repeating: "=", count: s.count) + "\n")
+
+print(beautify(wordSearch, solutions: searched, mode: .starAround) + "\n")
+
+// Prints the found words in a list with their positions
 
 for (word, range) in searched {
     print("\(word): \(range)")
