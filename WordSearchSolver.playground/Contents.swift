@@ -232,23 +232,51 @@ func solve(_ wordSearch: WordSearch, for wordsToFind: [String]) -> [String : Pos
     }
 }
 
-let wordSearch: WordSearch = [
-    ["J", "F", "U", "A", "C", "T", "P", "Z", "S", "J", "I", "E", "D", "T", "J"],
-    ["A", "J", "K", "O", "Y", "F", "E", "C", "G", "D", "F", "L", "T", "R", "J"],
-    ["O", "Y", "R", "B", "R", "G", "A", "K", "E", "M", "V", "C", "A", "L", "P"],
-    ["L", "R", "L", "M", "H", "R", "O", "N", "C", "K", "P", "I", "C", "V", "F"],
-    ["Y", "M", "B", "O", "E", "I", "K", "I", "O", "O", "V", "C", "I", "M", "K"],
-    ["V", "X", "P", "C", "H", "R", "C", "C", "W", "D", "P", "I", "T", "P", "N"],
-    ["E", "M", "R", "S", "N", "A", "I", "L", "S", "S", "T", "U", "K", "Z", "B"],
-    ["M", "O", "P", "V", "I", "J", "F", "J", "M", "X", "J", "L", "L", "M", "K"],
-    ["W", "F", "D", "F", "Y", "Z", "R", "A", "B", "M", "Q", "H", "T", "Y", "S"],
-    ["P", "A", "I", "E", "I", "P", "R", "P", "Q", "L", "D", "Y", "A", "R", "Q"],
-    ["X", "T", "I", "R", "O", "T", "W", "T", "T", "L", "W", "X", "A", "F", "I"],
-    ["M", "P", "V", "W", "S", "G", "O", "G", "R", "S", "M", "L", "S", "Z", "Z"],
-    ["K", "A", "E", "J", "U", "T", "W", "Z", "F", "O", "L", "L", "Q", "L", "Q"],
-    ["F", "R", "A", "D", "N", "E", "L", "A", "C", "O", "L", "R", "J", "D", "N"],
-    ["A", "P", "V", "W", "F", "R", "D", "O", "C", "M", "Y", "D", "H", "I", "J"]
-]
+/// Converts the input string to a `WordSearch`. If the input
+/// does not have the same number of characters in each row
+/// or there is not the same number of rows as characters in
+/// each row (that is, the input is not a "square" of
+/// characters, returns `nil`.
+func convertToWordSearch(string: String) -> WordSearch? {
+    var result: WordSearch = []
+    
+    let lines = string.split(separator: "\n")
+    
+    let lineCount = lines.count
+    guard !(lines.isEmpty), let characterCount = lines.first?.count, lineCount == characterCount else { return nil }
+    
+    for line in lines {
+        result.append([])
+        
+        guard line.count == characterCount else { return nil }
+        
+        for character in line {
+            result[result.count - 1].append(character)
+        }
+    }
+    
+    return result
+}
+
+let input = """
+J F U A C T P Z S J I E D T J
+A J K O Y F E C G D F L T R J
+O Y R B R G A K E M V C A L P
+L R L M H R O N C K P I C V F
+Y M B O E I K I O O V C I M K
+V X P C H R C C W D P I T P N
+E M R S N A I L S S T U K Z B
+M O P V I J F J M X J L L M K
+W F D F Y Z R A B M Q H T Y S
+P A I E I P R P Q L D Y A R Q
+X T I R O T W T T L W X A F I
+M P V W S G O G R S M L S Z Z
+K A E J U T W Z F O L L Q L Q
+F R A D N E L A C O L R J D N
+A P V W F R D O C M Y D H I J
+""".replacingOccurrences(of: " ", with: "")
+
+let wordSearch = convertToWordSearch(string: input)!
 
 let wordsToFind = [
     "calendar",
