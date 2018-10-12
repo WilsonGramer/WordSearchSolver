@@ -269,7 +269,7 @@ enum BeautifyMode {
 func beautify(_ wordSearch: WordSearch, solutions: [String : PositionRange], mode: BeautifyMode) -> String {
     return wordSearch.enumerated().map { rowIndex, row in
         return row.enumerated().map { characterIndex, character in
-            let p: Position = (x: rowIndex, y: characterIndex)
+            let p: Position = (x: characterIndex, y: rowIndex)
             let containsSolvedCharacter = solutions.values.contains { $0.positions.contains { $0 == p } }
             
             switch mode {
