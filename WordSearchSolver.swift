@@ -264,6 +264,7 @@ enum BeautifyMode {
     case starInPlace
     case starAround
     case onlyShowSolved
+    case consoleHighlight
 }
 
 func beautify(_ wordSearch: WordSearch, solutions: [String : PositionRange], mode: BeautifyMode) -> String {
@@ -281,6 +282,8 @@ func beautify(_ wordSearch: WordSearch, solutions: [String : PositionRange], mod
                 return containsSolvedCharacter ? "*\(character)*" : " \(character) "
             case .onlyShowSolved:
                 return containsSolvedCharacter ? String(character) : ""
+            case .consoleHighlight:
+                return containsSolvedCharacter ? "\u{001B}[32m\(character)\u{001B}[0m" : String(character)
             }
         }
     }.map({ $0.joined(separator: " ") }).joined(separator: mode == .starAround ? "\n\n" : "\n")
@@ -325,7 +328,7 @@ let s = "FOUND \(searched.count) OUT OF \(wordsToFind.count) WORDS (\(percentFou
 print(s)
 print(String(repeating: "=", count: s.count) + "\n")
 
-print(beautify(wordSearch, solutions: searched, mode: .starAround) + "\n")
+print(beautify(wordSearch, solutions: searched, mode: .consoleHighlight) + "\n")
 
 // Prints the found words in a list with their positions
 
